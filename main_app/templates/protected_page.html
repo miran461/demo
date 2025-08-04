@@ -1,0 +1,114 @@
+{% load static %}
+{% load tz %}
+{% load i18n %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanguard Account</title>
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- SweetAlert CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar container-fluid">
+        <div class="navbar__container">
+            <h1 id="navbar__logo">Vanguard</h1>
+            <div class="navbar__toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <ul class="navbar__menu">
+                <!-- Your existing navbar items -->
+                {% if request.user.is_authenticated %}
+                <li class="navbar__item">
+                    <a href="{% url "logout" %}" class="navbar__links">Logout <i class="fa-solid fa-lock"></i></a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="first container-fluid">
+        <div class="first__container row">
+            <h1>Welcome back, {{ user.username }}<br>
+                <span>-$402,708.00</span>
+            </h1>
+            <!-- Your existing content -->
+        </div>
+    </div>
+
+    <!-- Transaction container -->
+    <div class="transact container d-flex justify-content-center">
+        <div class="transact__container row">
+            <!-- Your existing transaction content -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{% static "js/app.js" %}"></script>
+    <script src="https://kit.fontawesome.com/af5051bfc9.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Universal Message Handler -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if messages %}
+                {% for message in messages %}
+                    Swal.fire({
+                        icon: '{{ message.tags }}' === 'error' ? 'error' : 'success',
+                        title: '{{ message.tags|title }}',
+                        text: '{{ message|escapejs }}',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false
+                    });
+                {% endfor %}
+            {% endif %}
+        });
+    </script>
+
+    <!-- AJAX Handler (if needed) -->
+    <script>
+        function handleProtectedRequest() {
+            fetch("{% url 'protected-page' %}", {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'error') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Access Denied',
+                        text: data.message,
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'Request failed',
+                    confirmButtonText: 'OK'
+                });
+            });
+        }
+    </script>
+</body>
+</html>
